@@ -25,9 +25,7 @@ def refresh():
     access_token = create_access_token(identity=identity, fresh=False)
     return jsonify(access_token=access_token)
 
-@app.before_first_request
-def create_tables():
-    db.create_all()
+
 
 # jwt = JWT(app, authenticate, identity)
 
