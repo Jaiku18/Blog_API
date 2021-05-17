@@ -3,7 +3,7 @@ from flask_restful import Api
 from resource.user import UserRegister, UserLogin
 from resource.post import Post, getPost
 from resource.comment import Comment, CommentList, getComment
-from db import db
+
 from flask_jwt_extended import create_access_token, create_refresh_token
 from flask_jwt_extended import JWTManager, get_jwt_identity, jwt_required
 from datetime import timedelta
@@ -43,5 +43,6 @@ api.add_resource(CommentList, '/getComment/<string:name>')
 api.add_resource(getComment, '/getPostComment/<string:name>')
 
 if __name__ == '__main__':
+    from db import db
     db.init_app(app)
     app.run(port=5000, debug=True)
