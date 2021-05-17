@@ -3,7 +3,6 @@ from flask_restful import Api
 from resource.user import UserRegister, UserLogin
 from resource.post import Post, getPost
 from resource.comment import Comment, CommentList, getComment
-
 from flask_jwt_extended import create_access_token, create_refresh_token
 from flask_jwt_extended import JWTManager, get_jwt_identity, jwt_required
 from datetime import timedelta
@@ -24,15 +23,9 @@ def refresh():
     identity = get_jwt_identity()
     access_token = create_access_token(identity=identity, fresh=False)
     return jsonify(access_token=access_token)
-
-
-
 # jwt = JWT(app, authenticate, identity)
 
 jwt = JWTManager(app)
-
-
-
 
 api.add_resource(UserLogin, '/login')
 api.add_resource(UserRegister, '/register')
