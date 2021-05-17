@@ -4,3 +4,4 @@ Flask-JWT-Extended
 Flask-RESTful
 Flask-SQLALchemy
 uwsgi
+flask-restful-url-generator
