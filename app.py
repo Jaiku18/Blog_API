@@ -6,10 +6,11 @@ from resource.comment import Comment, CommentList, getComment
 from flask_jwt_extended import create_access_token, create_refresh_token
 from flask_jwt_extended import JWTManager, get_jwt_identity, jwt_required
 from datetime import timedelta
+import os
 
 app = Flask(__name__)
 app.secret_key = 'jai'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
