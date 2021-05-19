@@ -1,7 +1,7 @@
-Flask
+Flask == 1.1.2
 Flask-JWT
 Flask-JWT-Extended
-Flask-RESTful
+Flask-RESTful == 0.3.8
 Flask-SQLALchemy
 uwsgi
 flask-restful-url-generator
