@@ -7,3 +7,4 @@ uwsgi
 flask-restful-url-generator
 PyJWT == 1.7.1
 psycopg2
+SQLAlchemy==1.0.9
