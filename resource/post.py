@@ -42,6 +42,7 @@ class Post(Resource):
             return item.json()
         return {'message': 'Item not found'}, 404
 
+    @jwt_required()
     def post(self):
         data = Post.parser.parse_args()
 
@@ -50,11 +51,7 @@ class Post(Resource):
         post = postModel(**data)
 
         try:
-
             if post.image:
-
-
-
                 post.save_to_db()
                 post.image = os.getcwd() + "\images\\" + str(post.id) + ".png"
                 with open(os.getcwd() + "\images\\" + str(post.id) + ".png", "wb") as fh:
@@ -64,14 +61,13 @@ class Post(Resource):
                 user.postId = user.postId + str(post.id) + ","
                 user.save_to_db()
                 print(user.postId)
-
-
             return {"message": "post created successfully.", 'id': post.id}, 201
         except Exception as e:
             return {"message": "An error occurred inserting the item."+ str(e), }, 500
 
         return post.json(), 201
 
+    @jwt_required()
     def delete(self, title):
         post = postModel.find_by_title(title)
         if post:
@@ -79,6 +75,7 @@ class Post(Resource):
             return {'message': 'post deleted.'}
         return {'message': 'post not found.'}, 404
 
+    @jwt_required()
     def put(self, title):
         data = Post.parser.parse_args()
 

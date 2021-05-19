@@ -41,6 +41,7 @@ class Comment(Resource):
 
         return comment.json(), 201
 
+    @jwt_required()
     def delete(self, title):
         comment = CommentModel.find_by_title(title)
         if comment:
