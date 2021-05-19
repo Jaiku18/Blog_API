@@ -23,8 +23,6 @@ class Comment(Resource):
                         help="Every post needs a content, cannot left blank."
                         )
 
-
-
     @jwt_required()
     def post(self):
         data = Comment.parser.parse_args()

@@ -21,7 +21,6 @@ class postModel(db.Model):
         self.hashtag = hashtag
         self.username = ''
 
-
     def json(self):
         return {'id': self.id, 'user_id': self.user_id, 'title': self.title, 'content': self.content, 'image': self.image, 'hashtag': self.hashtag, 'username': self.username}
 

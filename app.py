@@ -23,7 +23,6 @@ def refresh():
     identity = get_jwt_identity()
     access_token = create_access_token(identity=identity, fresh=False)
     return jsonify(access_token=access_token)
-# jwt = JWT(app, authenticate, identity)
 
 jwt = JWTManager(app)
 

@@ -53,9 +53,9 @@ class Post(Resource):
         try:
             if post.image:
                 post.save_to_db()
-                post.image = os.getcwd() + "\images\\" + str(post.id) + ".png"
-                with open(os.getcwd() + "\images\\" + str(post.id) + ".png", "wb") as fh:
-                    fh.write(base64.decodebytes(data["image"].encode()))
+                #post.image = os.getcwd() + "\images\\" + str(post.id) + ".png"
+                #with open(os.getcwd() + "\images\\" + str(post.id) + ".png", "wb") as fh:
+                    #fh.write(base64.decodebytes(data["image"].encode()))
                 user = UserModel.find_by_id(post.user_id)
                 post.save_to_db()
                 user.postId = user.postId + str(post.id) + ","
@@ -100,7 +100,6 @@ class getPost(Resource):
             posti = postModel(**data)
             #comment = CommentModel.find_by_postID(posti.id)
             print(post.id)
-
             #userList = UserModel.query.join(postModel, UserModel.id == postModel.user_id).add_columns(postModel.id, UserModel.username, postModel.title, postModel.content, postModel.hashtag).filter(UserModel.id == post.user_id)
             userList = postModel.get(post.id, post.user_id)
             print(userList)
@@ -108,9 +107,6 @@ class getPost(Resource):
             print(post.username)
 
             return {'item' :post.json()}
-
-
-
             #return {'item': post.json(), 'comment': list(map(lambda x: x.json(), CommentModel.query.filter_by(post_id= post.id).all())) }
         return {'message': 'Item not found'}, 404
 
