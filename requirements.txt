@@ -5,3 +5,4 @@ Flask-RESTful == 0.3.8
 Flask-SQLALchemy
 uwsgi
 flask-restful-url-generator
+PyJWT==1.7.1
