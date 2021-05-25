@@ -7,8 +7,8 @@ class postModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80))
     user_id = db.Column(db.Integer, db.ForeignKey('user_table.id'))
-    content = db.Column(db.String(800))
-    image = db.Column(db.String(800))
+    content = db.Column(db.String(8000))
+    image = db.Column(db.String(8000))
     hashtag = db.Column(db.String(80))
 
     user = db.relationship('UserModel')

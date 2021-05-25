@@ -36,14 +36,14 @@ class Post(Resource):
                         )
 
     @jwt_required()
-    def get(self, title):
-        item = postModel.find_by_title(title)
+    def get(self, name):
+        item = postModel.find_by_title(name)
         if item:
-            return item.json()
+            return item.json(), 201
         return {'message': 'Item not found'}, 404
 
     @jwt_required()
-    def post(self):
+    def post(self, name):
         data = Post.parser.parse_args()
 
         if postModel.find_by_title(data['title']):
@@ -68,27 +68,40 @@ class Post(Resource):
         return post.json(), 201
 
     @jwt_required()
-    def delete(self, title):
-        post = postModel.find_by_title(title)
+    def delete(self, name):
+        data = Post.parser.parse_args()
+        post = postModel.find_by_title(data['title'])
+
+        user = UserModel.find_by_id(post.user_id)
+
+        userList = user.postId.split(',')
+        userList = [x.strip() for x in userList]
+        print(userList, post.id)
+        userList.remove(str(post.id))
+        strin = ', '.join(userList)
+        print(strin)
+        user.postId = strin
+        user.save_to_db()
+        print(user.postId)
         if post:
+            comment = CommentModel.find_by_postID(post.id)
             post.delete_from_db()
-            return {'message': 'post deleted.'}
+
+            if comment:
+                comment.delete_from_db()
+            return {'message': 'post and Comment also  deleted.'}
         return {'message': 'post not found.'}, 404
 
     @jwt_required()
-    def put(self, title):
+    def put(self, name):
         data = Post.parser.parse_args()
 
-        post = postModel.find_by_title(title)
-
-        if post:
-            post.price = data['price']
-        else:
-            post = postModel(title, **data)
+        if postModel.find_by_title(data['title']):
+            post = postModel(**data)
 
         post.save_to_db()
 
-        return post.json()
+        return post.json(), 201
 
 
 class getPost(Resource):
@@ -106,7 +119,7 @@ class getPost(Resource):
             post.username =userList[0][2]
             print(post.username)
 
-            return {'item' :post.json()}
+            return {'item' :post.json()}, 201
             #return {'item': post.json(), 'comment': list(map(lambda x: x.json(), CommentModel.query.filter_by(post_id= post.id).all())) }
         return {'message': 'Item not found'}, 404
 

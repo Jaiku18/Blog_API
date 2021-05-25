@@ -1,6 +1,6 @@
 from flask import Flask, jsonify
 from flask_restful import Api
-from resource.user import UserRegister, UserLogin
+from resource.user import UserRegister, UserLogin, UserConfirm
 from resource.post import Post, getPost
 from resource.comment import Comment, CommentList, getComment
 from flask_jwt_extended import create_access_token, create_refresh_token
@@ -18,6 +18,10 @@ app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 
 api = Api(app)
 
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
 @app.route("/refresh", methods=["POST"])
 @jwt_required(refresh=True)
 def refresh():
@@ -29,11 +33,12 @@ jwt = JWTManager(app)
 
 api.add_resource(UserLogin, '/login')
 api.add_resource(UserRegister, '/register')
-api.add_resource(Post, '/addPost')
+api.add_resource(Post, '/addPost/<string:name>')
 api.add_resource(Comment, '/addComment')
 api.add_resource(getPost, '/getPost/<string:name>')
 api.add_resource(CommentList, '/getComment/<string:name>')
 api.add_resource(getComment, '/getPostComment/<string:name>')
+api.add_resource(UserConfirm, "/user_confirm/<int:user_id>")
 
 if __name__ == '__main__':
     from db import db
