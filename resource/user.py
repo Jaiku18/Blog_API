@@ -1,9 +1,10 @@
 from flask_restful import Resource, reqparse
 from flask import Flask, jsonify, make_response, request, render_template
 from model.userModel import UserModel
-from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from werkzeug.security import safe_str_cmp
 import os
+
 
 class UserRegister(Resource):
     parser = reqparse.RequestParser()
@@ -48,10 +49,12 @@ class UserRegister(Resource):
             access_token = create_access_token(identity=user.id, fresh=True)
             refresh_token = create_refresh_token(user.id)
             user.send_confirmation_email()
-            return {"message": "User created successfully.", 'id': user.id,'access_token': access_token,
-                       'refresh_token': refresh_token}, 201
+            return {"message": "User created successfully.", 'id': user.id,
+                        'access_token': access_token,
+                        'refresh_token': refresh_token}, 201
         except Exception as e:
-            return {'message': str(e)}
+            return {'message': str(e)}, 404
+
 
 class UserLogin(Resource):
     parsers = reqparse.RequestParser()
@@ -83,7 +86,7 @@ class UserLogin(Resource):
         else:
             return {
                 'message' : 'invalid credentials, please check your username and password'
-            }
+            }, 404
 
 
     def identity(payload):
@@ -104,4 +107,22 @@ class UserConfirm(Resource):
             render_template("confirmation_page.html", email=user.emailID), 200, headers
         )
 
+class UserList(Resource):
+    @jwt_required()
+    def get(self):
+        users = UserModel.query.all()
+        li = []
+        if users:
+            for user in users:
+                li.append(user.json())
+            print(li)
+            return {'item': li}, 201
 
+        return {'message': 'Item not found'}, 404
+
+class UserRefresh(Resource):
+    @jwt_required(refresh=True)
+    def post(self):
+        identity = get_jwt_identity()
+        access_token = create_access_token(identity=identity, fresh=False)
+        return {'access_token' : access_token}, 201

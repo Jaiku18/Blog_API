@@ -43,6 +43,20 @@ class Post(Resource):
         return {'message': 'Item not found'}, 404
 
     @jwt_required()
+    def patch(self, name):
+        data = Post.parser.parse_args()
+
+        if postModel.find_by_title(data['title']):
+            post = postModel(**data)
+            post.save_to_db()
+        else:
+            return {'Message': 'No Such Post'}, 404
+
+
+        return post.json(), 201
+
+
+    @jwt_required()
     def post(self, name):
         data = Post.parser.parse_args()
 
@@ -89,19 +103,22 @@ class Post(Resource):
 
             if comment:
                 comment.delete_from_db()
-            return {'message': 'post and Comment also  deleted.'}
+            return {'message': 'post and Comment also  deleted.'}, 201
         return {'message': 'post not found.'}, 404
 
     @jwt_required()
     def put(self, name):
         data = Post.parser.parse_args()
+        post = postModel(**data)
+        try:
+            if postModel.find_by_title(data['title']):
+                post = postModel(**data)
 
-        if postModel.find_by_title(data['title']):
-            post = postModel(**data)
+            post.save_to_db()
 
-        post.save_to_db()
-
-        return post.json(), 201
+            return post.json(), 201
+        except Exception as e:
+            return {"message": "An error occurred inserting the item."+ str(e), }, 500
 
 
 class getPost(Resource):
@@ -110,20 +127,29 @@ class getPost(Resource):
         data = Post.parser.parse_args()
         post = postModel.find_by_title(name)
         if post:
-            posti = postModel(**data)
-            #comment = CommentModel.find_by_postID(posti.id)
-            print(post.id)
-            #userList = UserModel.query.join(postModel, UserModel.id == postModel.user_id).add_columns(postModel.id, UserModel.username, postModel.title, postModel.content, postModel.hashtag).filter(UserModel.id == post.user_id)
+
             userList = postModel.get(post.id, post.user_id)
             print(userList)
             post.username =userList[0][2]
             print(post.username)
 
-            return {'item' :post.json()}, 201
-            #return {'item': post.json(), 'comment': list(map(lambda x: x.json(), CommentModel.query.filter_by(post_id= post.id).all())) }
+            return {'item': post.json()}, 201
         return {'message': 'Item not found'}, 404
 
-class PostList(Resource):
 
+class getallPost(Resource):
+    @jwt_required()
     def get(self):
-        return {'post': list(map(lambda x: x.json(), postModel.query.all()))}
+        i = postModel.query.all()
+        if i:
+            lis = []
+            for post in i:
+                userList = postModel.get(post.id, post.user_id)
+                post.username = userList[0][2]
+                post.image = ''
+                lis.append(post.json())
+
+            return {'item': lis}, 201
+        return {'message': 'Item not found'}, 404
+
+

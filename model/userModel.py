@@ -28,6 +28,8 @@ class UserModel(db.Model):
         self.phoneNumber = phoneNumber
         self.isActive = False
 
+    def json(self):
+        return {'username': self.username, 'postId' : self.postId, 'emailID': self.emailID, 'phoneNumber': self.phoneNumber, 'IsActive': self.isActive}
 
     def save_to_db(self):
         db.session.add(self)
@@ -36,6 +38,10 @@ class UserModel(db.Model):
     @classmethod
     def find_by_username(cls, username):
         return cls.query.filter_by(username=username).first()
+
+    @classmethod
+    def find_all_username(cls):
+        return cls.query.all()
 
     @classmethod
     def find_by_emailID(cls, emailID):

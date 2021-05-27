@@ -40,21 +40,14 @@ class Comment(Resource):
         return comment.json(), 201
 
     @jwt_required()
-    def delete(self, title):
-        comment = CommentModel.find_by_title(title)
+    def delete(self):
+        data = Comment.parser.parse_args()
+        comment = CommentModel.find_by_comment(data['comment'])
         if comment:
             comment.delete_from_db()
-            return {'message': 'comment deleted.'}
+            return {'message': 'comment deleted.'}, 201
         return {'message': 'comment not found.'}, 404
 
-
-# class getComment(Resource):
-#     @jwt_required()
-#     def get(self, name):
-#         item = CommentModel.find_by_title(name)
-#         if item:
-#             return item.json()
-#         return {'message': 'Item not found'}, 404
 
 class getComment(Resource):
     @jwt_required()
@@ -62,17 +55,15 @@ class getComment(Resource):
         post = postModel.find_by_id(name)
         comment = CommentModel.query.filter_by(post_id=name).all()
 
-        #comment = CommentModel.getComment(post.id, post.user_id)
         lis = []
-        for i in comment:
-            print(i.user_id)
-            i.username = ''
-            user = UserModel.find_by_id(i.user_id)
-            i.username = user.username
-            lis.append(i.json())
-        return {'comment': lis}
+        if comment:
+            for i in comment:
+                print(i.user_id)
+                i.username = ''
+                user = UserModel.find_by_id(i.user_id)
+                i.username = user.username
+                lis.append(i.json())
+            return {'comment': lis}
+        return {"message" : "No Comment Found for the requested post"}, 404
 
-class CommentList(Resource):
-    @jwt_required()
-    def get(self, name):
-        return {'comment': list(map(lambda x: x.json(), CommentModel.query.filter_by(post_id=name)))}
+

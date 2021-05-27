@@ -24,7 +24,7 @@ class CommentModel(db.Model):
 
     @classmethod
     def find_by_comment(cls, comment):
-        return cls.query.filter_by(comment=comment)
+        return cls.query.filter_by(comment=comment).first()
 
     @classmethod
     def find_by_postID(cls, post_id):

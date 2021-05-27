@@ -1,10 +1,9 @@
-from flask import Flask, jsonify
+from flask import Flask
 from flask_restful import Api
-from resource.user import UserRegister, UserLogin, UserConfirm
-from resource.post import Post, getPost
-from resource.comment import Comment, CommentList, getComment
-from flask_jwt_extended import create_access_token, create_refresh_token
-from flask_jwt_extended import JWTManager, get_jwt_identity, jwt_required
+from resource.user import UserRegister, UserLogin, UserConfirm, UserList, UserRefresh
+from resource.post import Post, getPost,  getallPost
+from resource.comment import Comment,  getComment
+from flask_jwt_extended import JWTManager
 from datetime import timedelta
 import os
 
@@ -22,23 +21,23 @@ api = Api(app)
 def create_tables():
     db.create_all()
 
-@app.route("/refresh", methods=["POST"])
-@jwt_required(refresh=True)
-def refresh():
-    identity = get_jwt_identity()
-    access_token = create_access_token(identity=identity, fresh=False)
-    return jsonify(access_token=access_token)
 
 jwt = JWTManager(app)
 
 api.add_resource(UserLogin, '/login')
 api.add_resource(UserRegister, '/register')
-api.add_resource(Post, '/addPost/<string:name>')
-api.add_resource(Comment, '/addComment')
-api.add_resource(getPost, '/getPost/<string:name>')
-api.add_resource(CommentList, '/getComment/<string:name>')
-api.add_resource(getComment, '/getPostComment/<string:name>')
+api.add_resource(UserRefresh, "/refresh")
+api.add_resource(UserList, "/getAllUsers")
 api.add_resource(UserConfirm, "/user_confirm/<int:user_id>")
+
+api.add_resource(Post, '/addPost/<string:name>')
+api.add_resource(getallPost, "/getAllPost")
+api.add_resource(getPost, '/getPost/<string:name>')
+
+
+api.add_resource(getComment, '/getPostComment/<string:name>')
+api.add_resource(Comment, '/addComment')
+
 
 if __name__ == '__main__':
     from db import db
